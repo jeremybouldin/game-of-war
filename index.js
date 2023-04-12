@@ -27,25 +27,24 @@ let myScore = 0
 let computerScore = 0
 
 newDeckBtn.addEventListener('click', handleClick)
-drawCards.addEventListener('click', () => {
-    fetch(
+
+drawCards.addEventListener('click', async () => {
+    const response = await fetch(
         `https://apis.scrimba.com/deckofcards/api/deck/${deckId}/draw/?count=2`
     )
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data)
-            currentCards = []
-            for (let i = 0; i < data.cards.length; i++) {
-                // console.log(card.code)
-                imageSection.children[i].innerHTML = ` 
-                <img src="${data.cards[i].image}">
-                `
-                currentCards.push(data.cards[i].value)
-            }
-            headerEl.textContent = evaluateWinningCard()
-            updateCardsAvailable(data)
-        })
-    // displayCardImages
+    const data = await response.json()
+    console.log(data)
+
+    currentCards = []
+    for (let i = 0; i < data.cards.length; i++) {
+        // console.log(card.code)
+        imageSection.children[i].innerHTML = `
+        <img src="${data.cards[i].image}">
+        `
+        currentCards.push(data.cards[i].value)
+    }
+    headerEl.textContent = evaluateWinningCard()
+    updateCardsAvailable(data)
 })
 
 function updateCardsAvailable(data) {
@@ -81,20 +80,17 @@ function evaluateWinningCard() {
     }
 }
 
-function handleClick() {
-    fetch('https://apis.scrimba.com/deckofcards/api/deck/new/shuffle/')
-        .then((res) => res.json())
-        .then((data) => {
-            updateCardsAvailable(data)
-            deckId = data.deck_id
-        })
+async function handleClick() {
+    const response = await fetch(
+        'https://apis.scrimba.com/deckofcards/api/deck/new/shuffle/'
+    )
+    const data = await response.json()
+
+    updateCardsAvailable(data)
+    deckId = data.deck_id
     drawCards.disabled = false
     myScore = 0
     computerScore = 0
     myScoreEl.textContent = `My score: ${myScore}`
     cpuScoreEl.textContent = `Computer: ${computerScore}`
 }
-
-// setTimeout(() => {
-//     logMessage()
-// }, 2000)
